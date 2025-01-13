@@ -1,0 +1,50 @@
+{% include "shop/nav.html" %}
+{% load i18n static %}
+<head>
+  <meta charset="utf-8">
+  <title>create</title>
+  <link rel="stylesheet" href="{% static 'css/glass.css'%}" type="text/css" media="all">
+  <link rel="stylesheet" href="{% static 'css/nav.css'%}" type="text/css" media="all">
+  
+</head>
+{% block content %}
+<!-- Order summary -->
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="card order-info">
+        <div class="card-body">
+          <h2 class="card-title">{% translate "Order Summary" %}</h2>
+          <ul>
+            {% for item in cart %}
+            <li>{{ item.quantity }}x {{ item.product.name }} <span>${{ item.total_price|floatformat:2 }}</span></li>
+            {% endfor %}
+            {% if cart.coupon %}
+            <li>{% blocktranslate with code=cart.coupon.code discount=cart.coupon.discount %} "{{ code }}" ({{ discount }}% off) {% endblocktranslate %} <span class="neg">- ${{ cart.get_discount|floatformat:2 }}</span></li>
+            {% endif %}
+          </ul>
+          <p>{% translate "Total" %}: ${{ cart.get_total_price_after_discount|floatformat:2 }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Checkout form -->
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="card order-form">
+        <div class="card-body">
+          <h2 class="card-title">{% translate "Checkout" %}</h2>
+          <form method="post" class="needs-validation">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">{% translate "Place Order" %}</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

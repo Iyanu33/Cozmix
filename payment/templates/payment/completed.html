@@ -1,0 +1,15 @@
+{% include "shop/nav.html" %}
+{% load i18n %}
+<head>
+  <meta charset="utf-8">
+  <title>completed</title>
+  <link rel="stylesheet" href="{% static 'css/nav.css'%}">
+
+</head>
+{% block title %}{% translate "Payment successful" %}{% endblock %}
+
+{% block content %}
+  <h1>{% translate "Your payment was successful" %}</h1>
+  <p>{% translate "Your payment has been processed successfully." %}</p>
+  {% include "shop/footer.html" %}
+{% endblock %}

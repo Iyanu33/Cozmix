@@ -82,9 +82,9 @@ table.cart {
   margin-bottom: 2em;
 }
 
-/* table.cart img { */
-  /* width: 180px; */
-/* } */
+table.cart img {
+  width: 120px;
+}
 
 tbody td.num {
   text-align: right;
@@ -93,6 +93,7 @@ tbody td.num {
 td input[type="submit"] {
   font-size: 0.75em;
   padding: 0.25em 0.5em;
+  background-color: #5993bb;
 }
 
 .order-form {
@@ -130,3 +131,4 @@ td input[type="submit"] {
 .neg {
   color: #dc1616;
 }
+

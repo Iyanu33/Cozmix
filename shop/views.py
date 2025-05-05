@@ -3,7 +3,23 @@ from django.shortcuts import get_object_or_404, render
 from cart.forms import CartAddProductForm
 from .models import Category, Product
 from .recommender import Recommender
+from site_settings.models import * 
 
+def home(request):
+    banners=Banner.objects.all()
+    site_logo=SiteLogo.objects.first()
+    site_info=SiteInfo.objects.first()
+    footer=Footer.objects.first()
+    products=Product.objects.all()
+    return render(request, 'shop/home.html',
+                  {
+                      'banners':banners,
+                      'site_logo':site_logo,
+                      'site_info':site_info,
+                      'footer':footer,
+                      'products':products,
+
+                  })
 
 def product_list(request, category_slug=None):
     category = None
@@ -22,7 +38,7 @@ def product_list(request, category_slug=None):
         'shop/product/list.html',
         {
             'category': category,
-            'categories': categories,
+#            'categories': categories,
             'products': products,
         },
     )
@@ -51,13 +67,6 @@ def product_detail(request, id, slug):
     )
 
 
-def about(request):
-    """about section """
-    return render(request,'shop/about.html')
 
-def carousel(request):
-    """docstring for carousel"""
-    category=Category.object.all()
-    return render(request,'shop/category.html',{'categories':categories})
 
     

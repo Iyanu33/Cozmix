@@ -11,16 +11,16 @@
 }
 
 .product-list .item {
-  width: 25%;
-  padding: 10px 20px 10px 0;
+  width: 10%;
+  padding: 10px 20px 10px 10px;
   float: left;
   text-align: center;
-  line-height: 1.2;
+  line-height: 1;
 }
 
 .product-list .item img {
-  width: 100%;
-  margin-bottom: 8px;
+  width: 30px;
+  margin-bottom: 28px;
 }
 
 .product-detail {
@@ -34,9 +34,10 @@
 }
 
 .product-detail img {
-  width: 40%;
+  width: 40px;
   float: left;
   padding: 0 20px 20px 0;
+  object-fit: cover;
 }
 
 .product-detail h1 {
@@ -46,3 +47,203 @@
 .product-detail h2 {
   margin-top: 10px;
 }
+.carousel-item img {
+    width: 100%;
+    height: 30%; /* Set the height to a fixed value */
+    object-fit: cover;
+}
+
+
+.form-container{
+  max-width: 500px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-control {
+  width: 100%;
+  height: 40px;
+  margin-bottom: 20px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.form-control:focus {
+  border-color: #aaa;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.form-button {
+  width: 100%;
+  height: 40px;
+  background-color: #4CAF50;
+  color: #fff;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.form-button:hover {
+  background-color: #3e8e41;
+}
+
+ul.errorlist {
+   float:left;
+   color:#ff0000;
+   clear:both;
+   font-size:13px;
+   margin:0 0 0 10px;
+   padding:10px 0;
+}
+
+table {
+  width: 95%;
+  border-spacing: 0;
+  border-collapse: collapse;
+}
+
+table th, table td {
+  text-align: left;
+  font-size: 1em;
+  padding: 1em;
+  margin: 0;
+}
+
+tbody tr:nth-child(odd) {
+  background-color: #efefef;
+}
+
+tbody tr.subtotal {
+  background-color: #ccc;
+}
+
+thead th, tbody tr.total {
+  background-color: #5993bb;
+  color: #fff;
+  font-weight: bold;
+}
+
+table.cart {
+  margin-bottom: 2em;
+}
+
+table.cart img {
+  width: 120px;
+}
+
+tbody td.num {
+  text-align: right;
+}
+
+td input[type="submit"] {
+  font-size: 0.75em;
+  padding: 0.25em 0.5em;
+  background-color: #5993bb;
+}
+
+/* Add a glassmorphism effect to the form */
+.order-form {
+backdrop-filter: blur(16px) saturate(180%);
+-webkit-backdrop-filter: blur(16px) saturate(180%);
+background-color: rgba(255, 255, 255, 0.75);
+border-radius: 12px;
+border: 1px solid rgba(209, 213, 219, 0.3);
+padding: 20px;
+}
+
+/* Style the form fields */
+.order-form label {
+font-size: 16px;
+margin-bottom: 10px;
+}
+
+.order-form input {
+padding: 10px;
+border: none;
+border-radius: 10px;
+background-color: #f7f7f7;
+}
+
+/* Style the submit button */
+.order-form input[type="submit"] {
+background-color: #660066;
+color: #fff;
+padding: 10px 20px;
+border: none;
+border-radius: 10px;
+cursor: pointer;
+}
+
+.order-form input[type="submit"]:hover {
+background-color: #3e8e41;
+}
+
+.order-form {
+  float: center;
+}
+
+.order-info {
+  float: right;
+  width: 300px;
+  background: #efefef;
+  padding: 10px 20px;
+  color: #333;
+  border-bottom: 4px solid #5993bb;
+}
+
+.order-info h3 {
+  color: #5993bb;
+}
+
+.order-info ul li {
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+}
+
+.order-info p {
+  font-weight: bold;
+  float: right;
+}
+
+.order-info span {
+  float: right;
+}
+
+.neg {
+  color: #dc1616;
+}
+
+/* .card-product-grid{ */
+/*      max-width: 150px; */
+/*      margin: 10px */
+/* } */
+
+/* .card-product-grid img{ */
+/*     width: 100%; */
+/*     height: 120px; */
+/*     object-fit:cover; */
+/* } */
+
+/* .info-wrap{ */
+/*     padding: 10px; */
+/* } */
+
+/* .title { */
+/*   font-size: 14px; */
+/* } */
+
+/* .price  { */
+/*   font-size: 12px; */
+/* } */

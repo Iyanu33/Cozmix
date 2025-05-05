@@ -1,12 +1,6 @@
+{% extends "shop/base.html" %}
 {% load i18n static %}
-{% include "shop/nav.html" %}
 
-<head>
-    <meta charset="utf-8">
-    <title>detail</title>
-    <link rel="stylesheet" href="{% static 'css/cart.css'%}">
-    <link rel="stylesheet" href="{% static 'css/nav.css'%}">
-</head>
 
 {% block title %}{% endblock %}
 
@@ -30,7 +24,7 @@
                     <tr>
                         <td>
                             <a href="{{ product.get_absolute_url }}">
-                                <img src="{% if product.image %}{{ product.image.url }} {% else %}{% static "img/no_image.png" %}{% endif %}">
+                                <img src="{% if product.image %}{{ product.image.url }} {% else %}{% static "img/no_image.png" %}{% endif %}" class="product_image">
                             </a>
                         </td>
                         <td>{{ product.name }}</td>
@@ -103,6 +97,5 @@
     <a href="{% url "shop:product_list" %}" class="btn btn-secondary">{% translate "Continue shopping" %}</a>
     <a href="{% url "orders:order_create" %}" class="btn btn-primary">{% translate "Checkout" %}</a>
 </p>
-{% include "shop/footer.html" %}
 {% endblock %}
 

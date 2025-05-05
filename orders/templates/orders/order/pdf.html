@@ -1,8 +1,7 @@
+{% extends 'shop/base.html' %}
 {% load i18n %}
-<html>
-<body>
 
-<h1>{% translate "cozmixcreations" %}</h1>
+<h1>{% translate "{{site_info.brand}}" %}</h1>
 <p>
   {% translate "Invoice no." %} {{ (link unavailable) }}<br>
   <span class="secondary"> {{ order.created|date:"M d, Y" }} </span>

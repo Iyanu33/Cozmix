@@ -1,11 +1,5 @@
-{% include "shop/nav.html" %}
+{% extends "shop/nav.html" %}
 {% load i18n static %}
-<head>
-  <meta charset="utf-8">
-  <title>process</title>
-  <link rel="stylesheet" href="{% static 'css/base.css'%}" type="text/css" media="screen" title="no title" charset="utf-8"> 
-  <link rel="stylesheet" href="{% static 'css/cart.css'%}" type="text/css" media="screen" title="no title" charset="utf-8"> 
-</head> 
 {% block title %}{% translate "Pay your order" %}{% endblock %}
 
 {% block content %}
@@ -68,5 +62,4 @@
     <input type="submit" value="{% translate "Pay now" %}">
     {% csrf_token %}
   </form>
-  {% include "shop/footer.html" %}
 {% endblock %}

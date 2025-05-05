@@ -7,22 +7,75 @@
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <link rel="stylesheet" href="{% static 'css/font-awesome.min.css'%}">
     <link href="{% static 'css/bootstrap.min.css'%}" rel="stylesheet">
-    <link href="{% static 'css/tailwind.min.css'%}" rel="stylesheet">
+    <link href="{% static 'css/footer.css'%}" rel="stylesheet">
     <link href="{% static 'css/product.css'%}" rel="stylesheet">
-   <script src="https://kit.fontawesome.com/f75233d904.js" crossorigin="anonymous"></script>
+    <link href="{% static 'css/glass.css'%}" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/f75233d904.js" crossorigin="anonymous"></script>
 </head>
 <body>
-  {% include 'shop/nav.html' %}
-  {% include 'shop/jumb.html' %}
- 
- 
-  {% block content %}
- <!-- content -->
-  {% include 'shop/carousel.html' %}
 
-  {% include 'shop/about.html'}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark bg-wine">
+    <a class="navbar-brand" href="#">{{site_info.brand}}</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars"></i> <!-- Fancy toggle bar icon -->
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url "shop:home" %}">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Contact</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">About</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'cart:cart_detail' %}">
+                    <i class="fas fa-shopping-cart"></i>
+                    {% with total_items=cart|length %}
+                        {% if total_items > 0 %}
+                            ({{ total_items }})
+                        {% endif %}
+                    {% endwith %}
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+  {% block content %}
+   <!-- content -->
 
   {% endblock %}
+  <section class="footer">
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <h5>About Us</h5>
+                <p>{{ site_info.about_us }}</p>
+            </div>
+            <div class="col-md-4">
+                <h5>Contact Us</h5>
+                <ul class="list-unstyled">
+                  <li><a href="{{phone}}" target="_blank"><i class="fa fa-phone"></i></a></li>
+                   <li><a href="{{email}}" target="_blank"><i class="fa fa-email"></i></a></li>
+                 
+                </ul>
+
+            </div>
+            <div class="col-md-4">
+                <h5>Follow Us</h5>
+                 <ul class="list-unstyled">
+                    {% for link in social_media_links.all %}
+                    <li><a href="{{ link.link }}" target="_blank"><i class="fa fa-{{platform}}"></i> {{link.platform}}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
 
   <!-- {% block about %}{% endblock %} -->
 

@@ -10,7 +10,7 @@ redis==5.0.4
 django-rosetta==0.10.0
 django-parler==2.3
 django-localflavor==4.0
-django-bootstrap5==24.3
+django-colorfield
 django-redis
 #psycopg2-binary
 dj-database-url

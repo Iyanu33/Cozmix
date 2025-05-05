@@ -1,11 +1,5 @@
-{% extends "shop/nav.html" %}
+{% extends "shop/base.html" %}
 {% load i18n static %}
-<head>
-  <meta charset="utf-8">
-  <title>detail</title>
-  <link rel="stylesheet" href="{% static 'css/base.css'%}" type="text/css" media="screen" title="no title" charset="utf-8"> 
-  <link rel="stylesheet" href="{% static 'css/product.css'%}" type="text/css" media="screen" title="no title" charset="utf-8"> 
-</head>
 
 {% block title %}
   {{ product.name }}
@@ -49,7 +43,6 @@
           </div>
         {% endfor %}
       
-{% include "shop/footer.html" %}
 
 {% endblock %}
   

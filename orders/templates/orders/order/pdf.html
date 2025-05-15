@@ -1,92 +1,78 @@
 {% extends 'shop/base.html' %}
 {% load i18n %}
 
-<h1>{% translate "{{site_info.brand}}" %}</h1>
-<p>
-  {% translate "Invoice no." %} {{ (link unavailable) }}<br>
-  <span class="secondary"> {{ order.created|date:"M d, Y" }} </span>
-</p>
-<h3>{% translate "Bill to" %}</h3>
-<p>
-  {{ order.first_name }} {{ order.last_name }}<br>
-  {{ order.email }}<br>
-  {{ order.address }}<br>
-  {{ order.postal_code }}, {{ order.city }}
-</p>
-<h3>{% translate "Items bought" %}</h3>
-<div class="table-responsive">
-  <table class="table">
-    <thead>
-      <tr>
-        <th>{% translate "Product" %}</th>
-        <th>{% translate "Price" %}</th>
-        <th>{% translate "Quantity" %}</th>
-        <th>{% translate "Cost" %}</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for item in order.items.all %}
-        <tr class="row{% cycle "1" "2" %}">
-          <td>{{ item.product.name }}</td>
-          <td class="num">${{ item.price }}</td>
-          <td class="num">{{ item.quantity }}</td>
-          <td class="num">${{ item.get_cost }}</td>
-        </tr>
-      {% endfor %}
+{% block title %}
+  {% translate "Invoice for Order" %} {{ order.id }} {# Example title #}
+{% endblock %}
 
-      {% if order.coupon %}
-        <tr class="subtotal">
-          <td colspan="3">{% translate "Subtotal" %}</td>
-          <td class="num">
-            ${{ order.get_total_cost_before_discount|floatformat:2 }}
-          </td>
-        </tr>
+{% block content %}
+  <h1>{{ site_info.brand }}</h1> {# Assuming site_info.brand is just the name #}
+  <p>
+    {% translate "Invoice no." %} {{ order.id }}<br> {# Assuming order.id is the invoice number #}
+    <span class="secondary"> {{ order.created|date:"M d, Y" }} </span>
+  </p>
+
+  <h3>{% translate "Bill to" %}</h3>
+  <p>
+    {{ order.first_name }} {{ order.last_name }}<br>
+    {{ order.email }}<br>
+    {{ order.address }}<br>
+    {{ order.postal_code }}, {{ order.city }}
+  </p>
+
+  <h3>{% translate "Items bought" %}</h3>
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
         <tr>
-          <td colspan="3">
-            {% blocktranslate with code=order.coupon.code discount=order.discount %}
-              "{{ code }}" ({{ discount }}% off)
-            {% endblocktranslate %}
-          </td>
-          <td class="num neg">
-            - ${{ order.get_discount|floatformat:2 }}
-          </td>
+          <th>{% translate "Product" %}</th>
+          <th>{% translate "Price" %}</th>
+          <th>{% translate "Quantity" %}</th>
+          <th>{% translate "Cost" %}</th>
         </tr>
-      {% endif %}
+      </thead>
+      <tbody>
+        {% for item in order.items.all %} {# Start the loop #}
+          <tr class="row{% cycle "1" "2" %}">
+            <td>{{ item.product.name }}</td>
+            <td class="num">${{ item.price|floatformat:2 }}</td> {# Added floatformat #}
+            <td class="num">{{ item.quantity }}</td>
+            <td class="num">${{ item.get_cost|floatformat:2 }}</td> {# Added floatformat #}
+          </tr>
+        {% endfor %} {# End the loop correctly here #}
 
-      <tr class="row{% cycle "1" "2" %}">
-        <td>{{ item.product.name }}</td>
-        <td class="num">${{ item.price }}</td>
-        <td class="num">{{ item.quantity }}</td>
-        <td class="num">${{ item.get_cost }}</td>
-      </tr>
-      {% endfor %}
-      {% if order.coupon %}
-      <tr class="subtotal">
-        <td colspan="3">{% translate "Subtotal" %}</td>
-        <td class="num"> ${{ order.get_total_cost_before_discount|floatformat:2 }} </td>
-      </tr>
-      <tr>
-        <td colspan="3">
-          {% blocktranslate with code=order.coupon.code discount=order.discount %}
-          "{{ code }}" ({{ discount }}% off)
-          {% endblocktranslate %}
-        </td>
-        <td class="num neg"> - ${{ order.get_discount|floatformat:2 }} </td>
-      </tr>
-      {% endif %}
-      <tr class="total">
-        <td colspan="3">{% translate "Total" %}</td>
-        <td class="num">${{ order.get_total_cost|floatformat:2 }}</td>
-      </tr>
-    </tbody>
-  </table>
+        {% if order.coupon %} {# Check for coupon AFTER the loop #}
+          <tr class="subtotal">
+            <td colspan="3">{% translate "Subtotal" %}</td>
+            <td class="num">
+              ${{ order.get_total_cost_before_discount|floatformat:2 }}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">
+              {% blocktranslate with code=order.coupon.code discount=order.discount %}
+                "{{ code }}" ({{ discount }}% off)
+              {% endblocktranslate %}
+            </td>
+            <td class="num neg">
+              - ${{ order.get_discount|floatformat:2 }}
+            </td>
+          </tr>
+        {% endif %} {# End coupon check #}
 
-  <span class="{% if order.paid %}paid{% else %}pending{% endif %}">
-    {% if order.paid %}{% translate "Paid" %}{% else %}{% translate "Pending payment" %}{% endif %}
-  </span>
-</div>
-<span class="{% if order.paid %}paid{% else %}pending{% endif %}">
-  {% if order.paid %}{% translate "Paid" %}{% else %}{% translate "Pending payment" %}{% endif %}
-</span>
-</body>
-</html>
+        <tr class="total"> {# Total row AFTER coupon/subtotal #}
+          <td colspan="3">{% translate "Total" %}</td>
+          <td class="num">${{ order.get_total_cost|floatformat:2 }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    {# Single payment status block #}
+    <span class="{% if order.paid %}paid{% else %}pending{% endif %}">
+      {% if order.paid %}{% translate "Paid" %}{% else %}{% translate "Pending payment" %}{% endif %}
+    </span>
+  </div> {# End table-responsive div #}
+
+{% endblock %} {# End block content #}
+
+{# Remove </body></html> tags #}

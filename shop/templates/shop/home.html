@@ -1,59 +1,159 @@
 {% extends 'shop/base.html' %}
 
-{% load static custom_tags %}
+{% load static %} {# Assuming custom_tags isn't needed for stars anymore, if it was only for that complex logic #}
 
 {% block content %}
-    <!-- Jumbotron Section with Banners -->
-    <div id="bannerCarousel" class="carousel slide" data-bs-ride="carousel">
-        <ol class="carousel-indicators">
-            {% for banner in banners %}
-                <li data-bs-target="#bannerCarousel" data-bs-slide-to="{{ forloop.counter0 }}" class="{% if forloop.counter0 == 0 %}active{% endif %}"></li>
-            {% endfor %}
-        </ol>
-        <div class="carousel-inner">
-            {% for banner in banners %}
-                <div class="carousel-item {% if forloop.counter0 == 0 %}active{% endif %}">
-                    <img src="{{ banner.image.url }}" class="d-block w-100" style="object-fit: cover;height:30%;">
-                    <div class="carousel-caption d-none d-md-block">
-                        <h5>{{ banner.title }}</h5>
-                        <p>{{ banner.description }}</p>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
 
-    <!-- Popular Products Section -->
-    <section class="section-name padding-y-sm">
-        <div class="container">
-            <header class="section-heading">
-                <a href="{% url 'shop:product_list' %}" class="btn btn-outline-primary float-right">See all</a>
-                <h3 class="section-title">Popular products</h3>
-            </header>
-            <div class="row">
-                {% for product in products %}
-                    <div class="col-lg-3 col-md-4 col-sm-6">
-                        <div class="card card-product-grid">
-                            <a href="{{ product.get_absolute_url }}" class="img-wrap">
-                                <img src="{{ product.images.url }}">
-                            </a>
-                            <figcaption class="info-wrap">
-                    <a href="{{ product.get_absolute_url }}" class="title">{{ product.product_name }}</a>
-                    <div class="price mt-1">$ {{ product.price }}</div>
-                    <div class="rating-star">
-                        <span>
-                            <i class="fa fa-star{% if product.averageReview < 0.5 %}-o{% elif product.averageReview >= 0.5 and product.averageReview < 1 %}-half-o {% endif %}" aria-hidden="true"></i>
-                            <i class="fa fa-star{% if product.averageReview < 1.5 %}-o{% elif product.averageReview >= 1.5 and product.averageReview < 2 %}-half-o {% endif %}" aria-hidden="true"></i>
-                            <i class="fa fa-star{% if product.averageReview < 2.5 %}-o{% elif product.averageReview >= 2.5 and product.averageReview < 3 %}-half-o {% endif %}" aria-hidden="true"></i>
-                            <i class="fa fa-star{% if product.averageReview < 3.5 %}-o{% elif product.averageReview >= 3.5 and product.averageReview < 4 %}-half-o {% endif %}" aria-hidden="true"></i>
-                            <i class="fa fa-star{% if product.averageReview < 4.5 %}-o{% elif product.averageReview >= 4.5 and product.averageReview < 5 %}-half-o {% endif %}" aria-hidden="true"></i>
-                        </span>
+    {# --- Jumbotron/Hero Carousel Section --- #}
+    <section class="hero-section mb-5"> {# Add a custom class for potential styling #}
+        <div id="bannerCarousel" class="carousel slide" data-bs-ride="carousel">
+            {# Indicators #}
+            <div class="carousel-indicators">
+                {% for banner in banners %}
+                    <button type="button" data-bs-target="#bannerCarousel" data-bs-slide-to="{{ forloop.counter0 }}"
+                            class="{% if forloop.first %}active{% endif %}"
+                            aria-current="{% if forloop.first %}true{% endif %}"
+                            aria-label="Slide {{ forloop.counter }}">
+                    </button>
+                {% endfor %}
+            </div>
+
+            {# Carousel Inner #}
+            <div class="carousel-inner">
+                {% for banner in banners %}
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                        {# Use object-fit and set a reasonable height for the banner #}
+                        <img src="{{ banner.image.url }}" class="d-block w-100 hero-banner-img" alt="{{ banner.title }}">
+                        <div class="carousel-caption d-none d-md-block text-start"> {# Show caption only on md+ screens, align left #}
+                            <h2 class="display-4 fw-bold">{{ banner.title }}</h2> {# Larger, bolder title #}
+                            <p class="lead">{{ banner.description }}</p> {# Lead paragraph for description #}
+                            {# Optional: Add a button for a Call to Action #}
+                            {# <a href="#" class="btn btn-primary btn-lg mt-3">Shop Now</a> #}
+                        </div>
+                         <div class="carousel-caption d-md-none text-center"> {# Smaller caption for small screens #}
+                            <h5>{{ banner.title }}</h5>
+                            <p>{{ banner.description }}</p>
+                        </div>
                     </div>
-                </figcaption>
+                {% empty %} {# Handle case where there are no banners #}
+                    <div class="carousel-item active">
+                                              <img src="{% static 'images/default_banner.jpg' %}" class="d-block w-100 hero-banner-img" alt="Welcome Banner">
+                        <div class="carousel-caption d-none d-md-block text-start">
+                             <h2 class="display-4 fw-bold">Welcome to Our Store!</h2>
+                             <p class="lead">Find the best products at amazing prices.</p>
+                        </div>
+                        <div class="carousel-caption d-md-none text-center">
+                            <h5>Welcome to Our Store!</h5>
+                            <p>Find the best products!</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            {# Carousel Controls #}
+            <button class="carousel-control-prev" type="button" data-bs-target="#bannerCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#bannerCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </section>
+
+    {# --- Popular Products Section --- #}
+    <section class="popular-products-section py-5"> {# Use standard padding utility #}
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-4"> {# Use flexbox for header alignment #}
+                <h2 class="mb-0">Popular Products</h2> {# Use standard heading class #}
+                <a href="{% url 'shop:product_list' %}" class="btn btn-outline-primary">
+                    See All Products <i class="fa fa-arrow-right ms-2"></i> {# Add an icon #}
+                </a>
+            </div>
+
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4"> {# Use Bootstrap 5 gutter utility #}
+                {% for product in products %}
+                    <div class="col"> {# Each product takes up one column #}
+                        <div class="card h-100 shadow-sm border-0"> {# Card with full height, shadow, no border #}
+                            <a href="{{ product.get_absolute_url }}" class="position-relative overflow-hidden">
+                                {# Image: Use card-img-top, add alt text, potentially style for consistent height #}
+                                <img src="{{ product.image.url }}" class="card-img-top product-card-img" alt="{{ product.name }}">
+                                {# Optional: Add a quick view or sale badge overlay here #}
+                            </a>
+                            <div class="card-body d-flex flex-column"> {# Use card-body, flex column for internal layout #}
+                                <h5 class="card-title mb-1">
+                                    <a href="{{ product.get_absolute_url }}" class="text-decoration-none text-dark">{{ product.name }}</a>
+                                </h5>
+                                {# Rating Display - Simplified approach, recommending a template tag #}
+                                <div class="d-flex align-items-center mb-2">
+                                    {% with average=product.averageReview|default:0 %} {# Use default:0 in case averageReview is None #}
+                                        {% for i in "12345" %} {# Loop 5 times #}
+                                            {% if average >= forloop.counter %}
+                                                <i class="fa fa-star text-warning"></i> {# Full star #}
+                                                                                                <i class="fa fa-star-half-o text-warning"></i>
+                                            {% else %}
+                                                <i class="fa fa-star-o text-warning"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                         {% if product.review_count is not None %}
+                                            <small class="text-muted ms-2">({{ product.review_count }})</small>
+                                        {% endif %}
+                                    {% endwith %}
+                                </div>
+                                <p class="card-text text-muted fs-5 fw-bold mt-auto">${{ product.price }}</p>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                     <div class="col-12 text-center">
+                        <p>No hot deals available at the moment.</p>
+                    </div>
+                {% endfor %}
             </div>
         </div>
-    {% endfor %}
-</div>
-</section>
-{% endblock %}
+    </section>
 
+    {# --- Optional: Add some custom CSS for better visuals --- #}
+    {% comment %}
+    but it's better practice to put it in a separate static CSS file
+    and include it in your base.html or this template.
+    {% endcomment %}
+    <style>
+        .hero-banner-img {
+            height: 50vh; /* Set banner height to 50% of viewport height */
+            object-fit: cover; /* Cover the area without distorting aspect ratio */
+            object-position: center; /* Center the image */
+        }
+
+        /* Add a subtle text shadow to carousel captions for readability */
+        .carousel-caption h2,
+        .carousel-caption p {
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .product-card-img {
+            height: 200px; /* Set a fixed height for product images */
+            object-fit: cover; /* Cover the image area */
+            object-position: center; /* Center the image */
+        }
+
+        /* Optional: Hover effect for product cards */
+        .card:hover {
+            transform: translateY(-5px);
+            transition: transform 0.3s ease-in-out;
+            box-shadow: 0 1rem 3rem rgba(0,0,0,.175)!important; /* Stronger shadow on hover */
+        }
+
+         /* Optional: Hover effect for product images */
+         .product-card-img {
+             transition: transform 0.3s ease-in-out;
+         }
+         .card a.position-relative:hover .product-card-img {
+             transform: scale(1.05); /* Slightly zoom on hover */
+         }
+
+
+    </style>
+
+{% endblock %}

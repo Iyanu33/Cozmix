@@ -11,6 +11,7 @@ def home(request):
     site_info=SiteInfo.objects.first()
     footer=Footer.objects.first()
     products=Product.objects.all()
+    hot_products=Product.objects.filter(is_hot=True)
     return render(request, 'shop/home.html',
                   {
                       'banners':banners,
@@ -18,6 +19,7 @@ def home(request):
                       'site_info':site_info,
                       'footer':footer,
                       'products':products,
+                      'hot_products':hot_products,
 
                   })
 

@@ -1,101 +1,161 @@
 {% extends "shop/base.html" %}
 {% load i18n static %}
+{% load crispy_forms_tags %} {# Make sure you have django-crispy-forms installed and configured if you want to use crispy_forms_tags #}
+{# Or just use the add_class filter if you don't use crispy-forms #}
+{% load widget_tweaks %} {# Need widget_tweaks if using add_class filter directly #}
 
 
-{% block title %}{% endblock %}
+{% block title %}{% translate "Your cart" %}{% endblock %}
 
 {% block content %}
-    <h1>{% translate "Your shopping cart" %}</h1>
+<div class="container py-4">
+
+    <h1 class="mb-4 text-center">{% translate "Your cart" %}</h1>
+
     <div class="table-responsive">
-    <table class="cart">
-        <thead>
-            <tr>
-                <th>{% translate "Image" %}</th>
-                <th>{% translate "Product" %}</th>
-                <th>{% translate "Quantity" %}</th>
-                <th>{% translate "Remove" %}</th>
-                <th>{% translate "Unit price" %}</th>
-                <th>{% translate "Price" %}</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in cart %}
-                {% with product=item.product %}
-                    <tr>
-                        <td>
-                            <a href="{{ product.get_absolute_url }}">
-                                <img src="{% if product.image %}{{ product.image.url }} {% else %}{% static "img/no_image.png" %}{% endif %}" class="product_image">
-                            </a>
-                        </td>
-                        <td>{{ product.name }}</td>
-                        <td>
-                            <form action="{% url "cart:cart_add" product.id %}" method="post">
-                                {{ item.update_quantity_form.quantity }}
-                                {{ item.update_quantity_form.override }}
-                                <input type="submit" value="{% translate "Update" %}">
-                                {% csrf_token %}
-                            </form>
-                        </td>
-                        <td>
-                            <form action="{% url "cart:cart_remove" product.id %}" method="post">
-                                <input type="submit" value="{% translate "Remove" %}">
-                                {% csrf_token %}
-                            </form>
-                        </td>
-                        <td class="num">${{ item.price }}</td>
-                        <td class="num">${{ item.total_price }}</td>
-                    </tr>
-                {% endwith %}
-            {% endfor %}
-            {% if cart.coupon %}
-                <tr class="subtotal">
-                    <td>{% translate "Subtotal" %}</td>
-                    <td colspan="4"></td>
-                    <td class="num">${{ cart.get_total_price|floatformat:2 }}</td>
-                </tr>
+        <table class="table table-hover align-middle">
+            <thead>
                 <tr>
-                    <td>
-                        {% blocktranslate with code=cart.coupon.code discount=cart.coupon.discount %}
-                            "{{ code }}" coupon ({{ discount }}% off)
-                        {% endblocktranslate %}
-                    </td>
-                    <td colspan="4"></td>
-                    <td class="num neg"> - ${{ cart.get_discount|floatformat:2 }} </td>
+                    <th scope="col">{% translate "Image" %}</th>
+                    <th scope="col">{% translate "Product" %}</th>
+                    <th scope="col" class="text-center">{% translate "Quantity" %}</th>
+                    <th scope="col">{% translate "Remove" %}</th>
+                    <th scope="col" class="text-end">{% translate "Unit price" %}</th>
+                    <th scope="col" class="text-end">{% translate "Price" %}</th>
                 </tr>
-            {% endif %}
-            <tr class="total">
-                <td>{% translate "Total" %}</td>
-                <td colspan="4"></td>
-                <td class="num"> ${{ cart.get_total_price_after_discount|floatformat:2 }} </td>
-            </tr>
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for item in cart %}
+                    {% with product=item.product %}
+                        <tr>
+                            <td>
+                                <a href="{{ product.get_absolute_url }}">
+                                    <img src="{% if product.image %}{{ product.image.url }} {% else %}{% static "img/no_image.png" %}{% endif %}"
+                                         alt="{{ product.name }}"
+                                         class="img-fluid rounded" style="max-height: 80px; width: auto;">
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{{ product.get_absolute_url }}" class="text-decoration-none text-dark fw-bold">
+                                    {{ product.name }}
+                                </a>
+                            </td>
+                            <td class="text-center">
+                                <form action="{% url "cart:cart_add" product.id %}" method="post" class="d-inline-flex align-items-center">
+                                    {# Assuming item.update_quantity_form has 'quantity' and 'override' fields #}
+                                    {{ item.update_quantity_form.quantity|add_class:"form-control form-control-sm text-center" }}
+                                    {{ item.update_quantity_form.override }}
+                                    <button type="submit" class="btn btn-primary btn-sm ms-2">{% translate "Update" %}</button>
+                                    {% csrf_token %}
+                                </form>
+                            </td>
+                            <td>
+                                <form action="{% url "cart:cart_remove" product.id %}" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-danger btn-sm">{% translate "Remove" %}</button>
+                                    {% csrf_token %}
+                                </form>
+                            </td>
+                            <td class="text-end">${{ item.price }}</td>
+                            <td class="text-end">${{ item.total_price }}</td>
+                        </tr>
+                                            {% endwith %}
+                {% endfor %}
+
+                {# Subtotal and Total Rows #}
+                {% if cart.coupon %}
+                    <tr class="table-light">
+                        <td colspan="5" class="text-end fw-bold">{% translate "Subtotal" %}</td>
+                        <td class="text-end fw-bold">${{ cart.get_total_price|floatformat:2 }}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="text-end">
+                            {% blocktranslate with code=cart.coupon.code discount=cart.coupon.discount %}
+                                "{{ code }}" coupon ({{ discount }}% off)
+                            {% endblocktranslate %}
+                        </td>
+                        <td class="text-end text-danger">- ${{ cart.get_discount|floatformat:2 }}</td>
+                    </tr>
+                {% endif %}
+                <tr class="table-primary">
+                    <td colspan="5" class="text-end fw-bold">{% translate "Total" %}</td>
+                    <td class="text-end fw-bold">${{ cart.get_total_price_after_discount|floatformat:2 }}</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
+
+    {# Recommendations Section #}
     {% if recommended_products %}
-        <div class="recommendations cart">
-            <h3>{% translate "People who bought this also bought" %}</h3>
-            {% for p in recommended_products %}
-                <div class="item">
-                    <a href="{{ p.get_absolute_url }}">
-                        <img src="{% if p.image %}{{ p.image.url }}{% else %} {% static "img/no_image.png" %}{% endif %}">
-                    </a>
-                    <p><a href="{{ p.get_absolute_url }}">{{ p.name }}</a></p>
-                </div>
-            {% endfor %}
+        <div class="recommendations mt-5">
+            <h3 class="mb-3">{% translate "People who bought this also bought" %}</h3>
+            <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-3">
+                {% for p in recommended_products %}
+                    <div class="col">
+                        <div class="card h-100 shadow-sm border-0">
+                            <a href="{{ p.get_absolute_url }}" class="position-relative overflow-hidden">
+                                <img src="{% if p.image %}{{ p.image.url }}{% else %} {% static "img/no_image.png" %}{% endif %}"
+                                     class="card-img-top recommended-img"
+                                     alt="{{ p.name }}">
+                            </a>
+                            <div class="card-body p-2 d-flex flex-column">
+                                <p class="card-text text-center text-truncate mb-1">
+                                    <a href="{{ p.get_absolute_url }}" class="text-decoration-none text-dark fw-bold">
+                                        {{ p.name }}
+                                    </a>
+                                </p>
+                                {% comment %} <p class="card-text text-center small text-muted mt-auto">${{ p.price }}</p> {% endcomment %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
         </div>
     {% endif %}
 
-<p>{% translate "Apply a coupon" %}:</p>
-<form action="{% url "coupons:apply" %}" method="post" class="form-inline">
-    <div class="form-group">
-        {{ coupon_apply_form }}
+    {# Coupon Form Integration #}
+    <div class="mt-4"> {# Add margin-top #}
+        <p class="mb-2">{% translate "Apply a coupon" %}:</p> {# Add margin-bottom #}
+        {# Use Bootstrap form-inline (deprecated in v5, but still works for layout) or d-flex #}
+        {# Ensure coupon_apply_form is passed from the view #}
+        <form action="{% url "coupons:apply" %}" method="post" class="d-flex align-items-center">
+            {% csrf_token %} {# CSRF token inside the form #}
+            {# Use flex-grow-1 to make input take available space, me-2 for margin-right #}
+            {# Added max-width to prevent the input from becoming too wide on large screens #}
+            <div class="flex-grow-1 me-2" style="max-width: 200px;">
+                 {# Render the coupon code field and apply form-control class #}
+                 {# Assuming the form object is named coupon_apply_form and has a field named 'code' #}
+                                  {{ coupon_apply_form.code|add_class:"form-control" }}
+            </div>
+            {# Apply Bootstrap button class #}
+            <button type="submit" class="btn btn-secondary">{% translate "Apply" %}</button>
+        </form>
     </div>
-    <button type="submit" class="btn btn-primary">{% translate "Apply" %}</button>
-    {% csrf_token %}
-</form>
-<p class="text-right">
-    <a href="{% url "shop:product_list" %}" class="btn btn-secondary">{% translate "Continue shopping" %}</a>
-    <a href="{% url "orders:order_create" %}" class="btn btn-primary">{% translate "Checkout" %}</a>
-</p>
-{% endblock %}
 
+    {# Checkout and Continue Shopping Buttons Integration #}
+    {# text-end for right alignment, mt-4 for margin-top #}
+    <p class="text-end mt-4">
+        {# me-2 for margin-end between the buttons #}
+        <a href="{% url "shop:product_list" %}" class="btn btn-secondary me-2">{% translate "Continue shopping" %}</a>
+        {# Primary button for checkout #}
+        <a href="{% url "orders:order_create" %}" class="btn btn-primary">{% translate "Checkout" %}</a>
+    </p>
+
+
+</div>
+
+{# --- Optional: Add some custom CSS for better visuals --- #}
+<style>
+    .recommended-img {
+        height: 150px; /* Set a fixed height */
+        object-fit: cover; /* Cover the area */
+        object-position: center; /* Center the image */
+    }
+
+     .recommendations .card:hover {
+        transform: translateY(-3px);
+        transition: transform 0.2s ease-in-out;
+        box-shadow: 0 .25rem .75rem rgba(0,0,0,.1)!important;
+    }
+</style>
+
+{% endblock %}

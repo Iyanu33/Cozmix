@@ -43,6 +43,7 @@ class Product(TranslatableModel):
     available = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+    is_hot=models.BooleanField(default=False)
 
     class Meta:
         # ordering = ['name']

@@ -1,26 +1,90 @@
 {% extends "shop/base.html" %}
-
 {% load i18n static %}
 
+{% block title %}Products{% endblock title %} {# Add a title block #}
+
 {% block content %}
-    <div class="container">
-        <div class="row">
-            {% for product in products %}
-                <div class="col-lg-3 col-md-4 col-sm-6">
-                    <div class="card md-4 shadow-sm">
-                        <img class="card-img-top" src="{% if product.image %}{{ product.image.url }}{% else %}{% static "img/no_image.png" %}{% endif %}" alt="{{ product.name }}">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ product.name }}</h5>
-                            <p class="card-text">${{ product.price }}</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="btn-group">
-                                    <a href="{{ product.get_absolute_url }}" class="btn btn-primary">view details</a>
-                                </div>
-                            </div>
-                        </div>
+<div class="container py-4"> {# Add vertical padding to the container #}
+
+    <h1 class="mb-4 text-center">Our Products</h1> {# Add a main heading for the page #}
+
+    {# Use row-cols-* for cleaner grid definition, g-4 for gutters #}
+    {# This sets 1 column on extra small, 2 on small, 3 on medium, 4 on large #}
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+        {% for product in products %}
+            <div class="col"> {# col is sufficient when using row-cols-* on the row #}
+                {# Use card structure, h-100 for equal height, shadow-sm, border-0 #}
+                <div class="card h-100 shadow-sm border-0">
+                    {# Wrap image and title in a link #}
+                    <a href="{{ product.get_absolute_url }}" class="position-relative overflow-hidden">
+                         <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static "img/no_image.png" %}{% endif %}"
+                              class="card-img-top product-list-img" {# Add a class for custom image styling #}
+                              alt="{{ product.name }}"> {# Keep alt text #}
+                    </a>
+                    <div class="card-body d-flex flex-column p-3"> {# Use flex column, add padding #}
+                        {# Product Name (linked) #}
+                        <h5 class="card-title mb-2 text-truncate"> {# mb-2 for spacing, truncate long titles #}
+                            <a href="{{ product.get_absolute_url }}" class="text-decoration-none text-dark">
+                                {{ product.name }}
+                            </a>
+                        </h5>
+
+                        {# Product Price #}
+                        <p class="card-text price fw-bold mt-auto mb-3">${{ product.price }}</p> {# Push price down, bold, mb-3 #}
+
+                        {# View Details Button - placed directly in card-body #}
+                        <a href="{{ product.get_absolute_url }}" class="btn btn-primary w-100">View Details</a> {# Full width button #}
+
+                        {# Optional: Add to cart form here if desired #}
+                        {% comment %}
+                        <form action="{% url "cart:cart_add" product.id %}" method="post" class="mt-2">
+                            {% csrf_token %}
+                            {# Assuming your product object has a form instance attached or you pass them #}
+                            {# Or you might need to create a simple form here if not passing instances #}
+                            {# Example using a simple input (needs validation) #}
+                            {# <input type="number" name="quantity" value="1" min="1" class="form-control form-control-sm mb-2" style="width: 60px;"> #}
+                            {# If passing a form for each product: #}
+                                                        {# {{ product.cart_form.quantity.label_tag }} #}
+                            {# {{ product.cart_form.quantity }} #}
+                            {# {{ product.cart_form.override }} #}
+                            {# <button type="submit" class="btn btn-success btn-sm">Add to Cart</button> #}
+                        </form>
+                        {% endcomment %}
+
                     </div>
                 </div>
-            {% endfor %}
-        </div>
+            </div>
+        {% endfor %}
     </div>
+</div>
+
+{# --- Optional: Add some custom CSS for better visuals --- #}
+{% comment %}
+Again, better to put this in a separate static CSS file.
+{% endcomment %}
+<style>
+    /* Style for list product images for consistent size */
+    .product-list-img {
+        height: 200px; /* Set a fixed height for list product images */
+        object-fit: cover; /* Cover the area */
+        object-position: center; /* Center the image */
+    }
+
+    /* Optional: Hover effect for cards */
+     .card:hover {
+        transform: translateY(-3px);
+        transition: transform 0.2s ease-in-out;
+        box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important; /* Stronger shadow on hover */
+    }
+
+     /* Optional: Hover effect for images */
+     .product-list-img {
+         transition: transform 0.3s ease-in-out;
+     }
+     .card a.position-relative:hover .product-list-img {
+         transform: scale(1.03); /* Slightly zoom on hover */
+     }
+
+</style>
+
 {% endblock %}

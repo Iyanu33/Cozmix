@@ -46,8 +46,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'localflavor',
+    'crispy_forms',
     'parler',
     'rosetta',
+    'widget_tweaks',
     'shop.apps.ShopConfig',
     'cart.apps.CartConfig',
     'orders.apps.OrdersConfig',
@@ -174,6 +176,8 @@ if not DEBUG:
     }
     
 
+
+CRISPY_TEMPLATE_PACK = 'bootstrap5'
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

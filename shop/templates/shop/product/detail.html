@@ -3,48 +3,133 @@
 
 {% block title %}
   {{ product.name }}
-{% endblock title%}
-{% block content %}
-<div class="container">
-  <div class="row">
-    <div class="col-md-4">
-      <div class="card">
-        <img src="{% if product.image %}{{ product.image.url }}{% else %}
-        {% static "img/no_image.png" %}{% endif %}" class="card-img-top">
-        <h1 class="card-title">{{ product.name }}</h1>
-        <h2 class="card-subtitle mb-2 text-muted">
-        <a href="{{ product.category.get_absolute_url }}">
-        {{ product.category }}
-        </a>
-        </h2>
-        <p class="card-text price">${{ product.price }}</p>
-        <form action="{% url "cart:cart_add" product.id %}" method="post">
-          {{ cart_product_form }}
-          {% csrf_token %}
-          <button type="submit" class="btn btn-primary">{% translate "Add to cart" %}</button>
-        </form>
+{% endblock title %}
 
-        <p class="card-text ">{{ product.description|linebreaks }}</p>
-      </div>
+{% block content %}
+<div class="container py-4"> {# Added padding #}
+    <div class="row g-4"> {# Use gutter utility #}
+        {# --- Product Image Column --- #}
+        <div class="col-12 col-md-6 col-lg-5"> {# Responsive columns: full width on small, half on medium, slightly smaller on large #}
+            <div class="product-image-container"> {# Custom class for image styling #}
+                <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static "img/no_image.png" %}{% endif %}"
+                     class="img-fluid rounded shadow-sm" {# Responsive image, rounded corners, shadow #}
+                     alt="{{ product.name }}"> {# Added alt text #}
+            </div>
+        </div>
+
+        {# --- Product Details Column --- #}
+        <div class="col-12 col-md-6 col-lg-7"> {# Remaining columns #}
+            <div class="product-details-card card h-100 border-0 shadow-sm"> {# Use a card for details, full height, no border, shadow #}
+                <div class="card-body d-flex flex-column"> {# Use card-body, flex column for internal layout #}
+                    <h1 class="card-title display-5 fw-bold">{{ product.name }}</h1> {# Larger, bolder title #}
+
+                    <h2 class="card-subtitle mb-3 text-muted fs-6"> {# Smaller, muted subtitle #}
+                        Category: <a href="{{ product.category.get_absolute_url }}" class="text-decoration-none">{{ product.category }}</a>
+                    </h2>
+
+                    <p class="card-text price fs-3 fw-bold text-primary mt-2 mb-3">${{ product.price }}</p> {# Larger, bold price, primary color #}
+
+                    {# Add to Cart Form #}
+                    <form action="{% url "cart:cart_add" product.id %}" method="post" class="mb-3"> {# Added margin-bottom #}
+                        {% csrf_token %}
+                        {# Style the quantity input #}
+                        <div class="d-flex align-items-center mb-3"> {# Align input and label #}
+                            {{ cart_product_form.quantity.label_tag }} {# Display label #}
+                            {{ cart_product_form.quantity }} {# Display input field #}
+                            {% if cart_product_form.quantity.errors %}
+                                <div class="text-danger ms-2">{{ cart_product_form.quantity.errors.as_text }}</div> {# Display errors #}
+                            {% endif %}
+                        </div>
+                         {# Style the override input (often hidden) #}
+                         {{ cart_product_form.override }}
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100"> {# Large, full-width button #}
+                                                      <i class="fa fa-shopping-cart me-2"></i> {% translate "Add to cart" %} {# Add cart icon #}
+                        </button>
+                    </form>
+
+                    {# Product Description #}
+                    <div class="mt-auto pt-3 border-top"> {# Push description to bottom, add top border #}
+                         <h3 class="h5">Description</h3> {# Small heading for description #}
+                         <p class="card-text text-muted">{{ product.description|linebreaks }}</p> {# Muted text #}
+                    </div>
+
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
+
+    {# --- Recommended Products Section --- #}
+    {% if recommended_products %} {# Only show section if there are recommended products #}
+        <hr class="my-5"> {# Add a horizontal rule for separation #}
+        <h2 class="text-center mb-4">You Might Also Like</h2> {# Centered heading #}
+
+        <div class="row row-cols-2 row-cols-md-4 row-cols-lg-5 g-4"> {# Grid for recommended products #}
+            {% for p in recommended_products %}
+                <div class="col"> {# Each recommended product takes one column #}
+                    <div class="card h-100 shadow-sm border-0"> {# Card structure for each recommended item #}
+                        <a href="{{ p.get_absolute_url }}" class="position-relative overflow-hidden">
+                            <img src="{% if p.image %}{{ p.image.url }}{% else %}{% static "img/no_image.png" %}{% endif %}"
+                                 class="card-img-top recommended-product-img" {# Custom class for image styling #}
+                                 alt="{{ p.name }}"> {# Add alt text #}
+                        </a>
+                        <div class="card-body p-2"> {# Smaller padding for recommended items #}
+                            <p class="card-title mb-0 text-truncate"> {# Truncate long titles #}
+                                <a href="{{ p.get_absolute_url }}" class="text-decoration-none text-dark">{{ p.name }}</a>
+                            </p>
+                            {# Optional: Add price or rating here if available on recommended_products objects #}
+                            {# <p class="card-text text-muted small">${{ p.price }}</p> #}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
 </div>
 
+{# --- Optional: Add some custom CSS for better visuals --- #}
+{% comment %}
+You can add this within a <style> tag here,
+but it's better practice to put it in a separate static CSS file
+and include it in your base.html or this template.
+{% endcomment %}
+<style>
+    /* Style for the main product image container if needed */
+    .product-image-container img {
+        /* You could add max-height here if images are wildly different */
+        object-fit: cover; /* Ensure image covers area without distortion */
+        /* object-position: center; */
+    }
 
+    /* Style for recommended product images for consistent size */
+    .recommended-product-img {
+        height: 150px; /* Set a fixed height for recommended product images */
+        object-fit: cover; /* Cover the area */
+        object-position: center; /* Center the image */
+    }
 
+    /* Style for the quantity input width */
+    #id_quantity { /* Assuming the input ID is id_quantity based on the form field name */
+        width: 60px; /* Adjust width as needed */
+        text-align: center;
+        margin-left: 10px; /* Space from label */
+    }
 
-        {% for p in recommended_products %}
-          <div class="item">
-            <a href="{{ p.get_absolute_url }}">
-              <img src="{% if p.image %}{{ p.image.url }}{% else %}
-              {% static  "img/no_image.png" %}{% endif %}">
-            </a>
-           <p><a href="{{ p.get_absolute_url }}">{{ p.name }}</a></p>
-          </div>
-        {% endfor %}
-      
+    /* Optional: Hover effect for recommended product cards */
+    .card:hover {
+        transform: translateY(-3px);
+        transition: transform 0.2s ease-in-out;
+                  box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important; /* Stronger shadow on hover */
+    }
+
+     /* Optional: Hover effect for recommended product images */
+     .recommended-product-img {
+         transition: transform 0.3s ease-in-out;
+     }
+     .card a.position-relative:hover .recommended-product-img {
+         transform: scale(1.03); /* Slightly zoom on hover */
+     }
+</style>
 
 {% endblock %}
-  
-
-

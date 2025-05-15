@@ -1,49 +1,127 @@
-{% extends "shop/nav.html" %}
+{% extends "shop/base.html" %}
 {% load i18n static %}
-<head>
-  <meta charset="utf-8">
-  <title>create</title>
-  <link rel="stylesheet" href="{% static 'css/glass.css'%}" type="text/css" media="all">
-  
-</head>
+{% load widget_tweaks %} {# Load widget_tweaks for easy form field styling #}
+
+
+{% block title %}{% translate "Place Your Order" %}{% endblock %} {# Set a title block #}
+
 {% block content %}
-<!-- Order summary -->
-<div class="container">
-  <div class="row justify-content-center">
-    <div class="col-md-6 col-lg-5">
-      <div class="card order-info">
-        <div class="card-body">
-          <h2 class="card-title">{% translate "Order Summary" %}</h2>
-          <ul>
-            {% for item in cart %}
-            <li>{{ item.quantity }}x {{ item.product.name }} <span>${{ item.total_price|floatformat:2 }}</span></li>
-            {% endfor %}
-            {% if cart.coupon %}
-            <li>{% blocktranslate with code=cart.coupon.code discount=cart.coupon.discount %} "{{ code }}" ({{ discount }}% off) {% endblocktranslate %} <span class="neg">- ${{ cart.get_discount|floatformat:2 }}</span></li>
-            {% endif %}
-          </ul>
-          <p>{% translate "Total" %}: ${{ cart.get_total_price_after_discount|floatformat:2 }}</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-<!-- Checkout form -->
-<div class="container">
-  <div class="row justify-content-center">
-    <div class="col-md-6 col-lg-5">
-      <div class="card order-form">
-        <div class="card-body">
-          <h2 class="card-title">{% translate "Checkout" %}</h2>
-          <form method="post" class="needs-validation">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-primary">{% translate "Place Order" %}</button>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+<div class="container my-4"> {# Add vertical margin for spacing #}
+
+    <h1 class="text-center mb-4">{% translate "Place Your Order" %}</h1> {# Main page title #}
+
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6"> {# Use one column to center and contain both cards #}
+
+            <!-- Order summary Card -->
+            <div class="card order-info mb-4 shadow-sm"> {# Add margin-bottom and shadow #}
+                <div class="card-body">
+                    <h2 class="card-title mb-3">{% translate "Order Summary" %}</h2> {# Add margin-bottom #}
+
+                    <ul class="list-unstyled"> {# Remove default list bullets and padding #}
+                        {% for item in cart %}
+                            <li class="d-flex justify-content-between mb-2 pb-1 border-bottom"> {# Use flexbox, spacing, border #}
+                                <div>{{ item.quantity }}x {{ item.product.name }}</div>
+                                <span>${{ item.total_price|floatformat:2 }}</span>
+                            </li>
+                        {% endfor %}
+
+                        {% if cart.coupon %}
+                            <li class="d-flex justify-content-between mb-2 text-success"> {# Use text-success for positive/discount #}
+                                <div>
+                                    {% blocktranslate with code=cart.coupon.code discount=cart.coupon.discount %}
+                                        "{{ code }}" ({{ discount }}% off)
+                                    {% endblocktranslate %}
+                                </div>
+                                <span class="text-danger">- ${{ cart.get_discount|floatformat:2 }}</span> {# Use text-danger for negative #}
+                            </li>
+                        {% endif %}
+
+                        {# Total line - separated and bold #}
+                        <li class="d-flex justify-content-between pt-2 mt-2 border-top fw-bold">
+                            <div>{% translate "Total" %}:</div>
+                            <span>${{ cart.get_total_price_after_discount|floatformat:2 }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Checkout form Card -->
+            <div class="card order-form shadow-sm"> {# Add shadow #}
+                <div class="card-body">
+                    <h2 class="card-title mb-3">{% translate "Shipping Information" %}</h2> {# Add margin-bottom #}
+
+                    <form method="post" class="needs-validation" novalidate> {# Add Bootstrap validation classes #}
+                        {% csrf_token %}
+
+                        {# --- Form Fields Rendering --- #}
+                        {# Loop through form fields and apply Bootstrap classes manually or with widget_tweaks #}
+                        {# This replaces {{ form.as_p }} for better Bootstrap compatibility #}
+
+                        {% for field in form %}
+                        <div class="mb-3">
+                          {{ field.label_tag|add_class:"form-label" }}
+                          {{ field|add_class:"form-control" }}
+                        </div>
+                        {% endfor %}
+
+
+
+                                {# Render the field widget and add the form-control class #}
+                                {% if field.field.widget.input_type == 'checkbox' %}
+                                    {# Handle checkboxes differently if needed, e.g., custom forms #}
+                                    {# For standard fields, render_field is usually enough #}
+                                    {% render_field field class="form-check-input" %}
+                                {% else %}
+                                    {% render_field field class="form-control" %} {# Add form-control class #}
+                                {% endif %}
+
+                                {% if field.help_text %}
+                                    <div class="form-text">{{ field.help_text|safe }}</div> {# Display help text #}
+                                {% endif %}
+
+                                {% for error in field.errors %}
+                                    {# Display field errors below the field #}
+                                    <div class="invalid-feedback d-block">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+
+                        {# --- Submit Button --- #}
+                        <button type="submit" class="btn btn-primary w-100 mt-3">{% translate "Place Order" %}</button> {# Full width button with margin-top #}
+                    </form>
+                </div>
+            </div>
+
+        </div> {# End col #}
+    </div> {# End row #}
+</div> {# End container #}
+{# --- Optional: Add script for Bootstrap client-side validation --- #}
+{# This requires Bootstrap's JS bundle #}
+{# If your base.html includes Bootstrap JS, this script will activate the validation styles #}
+{% comment %}
+<script>
+(function () {
+  'use strict'
+
+  // Fetch all the forms we want to apply custom Bootstrap validation styles to
+  var forms = document.querySelectorAll('.needs-validation')
+
+  // Loop over them and prevent submission
+  Array.prototype.slice.call(forms)
+    .forEach(function (form) {
+      form.addEventListener('submit', function (event) {
+        if (!form.checkValidity()) {
+          event.preventDefault()
+          event.stopPropagation()
+        }
+
+        form.classList.add('was-validated')
+      }, false)
+    })
+})()
+</script>
+{% endcomment %}
+
 
 {% endblock %}
